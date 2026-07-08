@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# cheap-coder - one CLI for the whole loop. Put it on PATH:
+#   ln -s ~/cheap-coder/bin/cheap-coder ~/.local/bin/cheap-coder
+# then, in any repo:  cheap-coder scope "..." | plan "..." | execute | review | status
+set -euo pipefail
+CC_HOME="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+export CC_HOME
+cmd="${1:-help}"; shift || true
+
+case "$cmd" in
+  scope)    exec "$CC_HOME/bin/scope.sh"   "$@" ;;
+  plan)     exec "$CC_HOME/bin/plan.sh"    "$@" ;;
+  execute|exec) exec "$CC_HOME/bin/execute.sh" "$@" ;;
+  review)   exec "$CC_HOME/bin/review.sh"  "$@" ;;
+  guard)    exec "$CC_HOME/bin/guard.sh"   "$@" ;;
+  init)     exec "$CC_HOME/bin/init.sh"    "$@" ;;
+  doctor)   exec "$CC_HOME/bin/doctor.sh"  "$@" ;;
+  status)   exec "$CC_HOME/bin/status.sh"  "$@" ;;
+  version|-v|--version) echo "cheap-coder 0.2.0" ;;
+  help|-h|--help|*)
+    cat <<'EOF'
+cheap-coder - Claude plans, MiniMax executes, Claude reviews.
+
+  Setup (once):
+    cheap-coder init          scaffold config + .protected into this repo
+    cheap-coder doctor        check claude CLI, key, git, python are ready
+
+  The loop (in any repo):
+    cheap-coder scope   "..."  Claude interrogates YOU -> SCOPE.md
+    cheap-coder plan    "..."  Claude writes PLAN.md (+ per-task verify questions)
+    cheap-coder execute        MiniMax runs PLAN.md on an exec/ branch -> ANSWERS.md
+    cheap-coder review  [base] Claude checks answers vs code, runs guards, merges
+
+  Anytime:
+    cheap-coder status         where the current run is (phase, branch, tasks)
+    cheap-coder guard  [base]  run all hard guards manually
+EOF
+    ;;
+esac

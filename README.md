@@ -38,11 +38,26 @@ and boxes it in:
 ## Setup (once)
 ```bash
 git clone https://github.com/maaxxy1/cheap-coder ~/cheap-coder
-cp ~/cheap-coder/config/system.env.example ~/cheap-coder/config/system.env
-# edit config/system.env: paste your MiniMax key + confirm the endpoint/model
+ln -s ~/cheap-coder/bin/cheap-coder ~/.local/bin/cheap-coder   # one CLI on PATH
+cd ~/your-project
+cheap-coder init        # scaffolds config + .protected into the repo
+# paste your MiniMax key into ~/cheap-coder/config/system.env
+cheap-coder doctor      # checks claude CLI, key, git, python are ready
 ```
 The executor is just Claude Code pointed at MiniMax's Anthropic-compatible
 endpoint (`ANTHROPIC_BASE_URL` / `ANTHROPIC_MODEL`) - no extra runtime.
+
+## One CLI
+```
+cheap-coder init | doctor | status         # setup + where am I
+cheap-coder scope   "..."                   # Claude interrogates you
+cheap-coder plan    "..."                   # Claude plans + verify questions
+cheap-coder execute                         # MiniMax executes + explains
+cheap-coder review  main                    # Claude gates the answers + merges
+```
+`cheap-coder status` infers the phase from the artifacts in the repo and tells
+you the next command. See `examples/` for a real PLAN + ANSWERS pair that pass
+the guards.
 
 ## Use (in any repo)
 ```bash
@@ -85,5 +100,26 @@ guards/    check_plan.py / check_answers.py / scan_secrets.py / check_protected.
 config/    system.env(.example)
 docs/      WORKFLOW.md
 ```
+
+## How it compares
+cheap-coder borrows the good ideas from the popular agent frameworks and adds the
+two they mostly skip - a **cost split** and a **code-explanation gate**.
+
+| Framework | Core idea | cheap-coder takes / differs |
+|-----------|-----------|------------------------------|
+| **Superpowers** (obra) | process *skills* (plan → TDD → verify) | same discipline, encoded as the scope/plan/execute/review contracts |
+| **Aider** | git-native pair-programmer, repo map | git-native too; planner reads the real source before writing tasks |
+| **Task Master** | PRD → task graph | plan = mechanical, testable tasks with acceptance lines |
+| **OpenHands / SWE-agent** | autonomous agent in a sandbox | branch isolation + guards instead of a full sandbox |
+| **Cline / Roo** | explicit plan / act modes | plan (Claude) and act (MiniMax) are literally *different models* |
+
+**What's unique here:**
+- **Cost split** - the smart model only plans + reviews; a ~10x cheaper model does
+  the execution. Most frameworks run one model for everything.
+- **Interrogation gate** - the executor must *explain its code and cite file:line*,
+  and the reviewer re-derives that logic against the source. Tests alone don't
+  catch a model that misunderstands what it built; this does.
+- **A cheap model on a short leash** - every guard exists because a cheap executor
+  fails in a specific way (see the table in `docs/WORKFLOW.md`).
 
 See `docs/WORKFLOW.md` for the full loop and the reasoning behind each guard.
