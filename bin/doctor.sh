@@ -19,6 +19,7 @@ if [ -f "$CC_HOME/config/system.env" ]; then
   check "EXECUTOR_MODEL set"     "[ -n \"\${EXECUTOR_MODEL:-}\" ]"    "set the model (e.g. MiniMax-M2)"
 fi
 check ".protected present"       "[ -f '$CC_HOME/.protected' ] || [ -f .protected ]" "cheap-coder init"
+check "Superpowers installed"    "ls ~/.claude/plugins/cache/claude-plugins-official/superpowers/*/skills/writing-plans >/dev/null 2>&1 || ls ~/.claude/skills/writing-plans >/dev/null 2>&1" "install obra/superpowers so each phase uses the real skill (optional - falls back to the role contracts)"
 echo
 [ $bad -eq 0 ] && echo "READY ($ok checks passed)." || echo "$bad thing(s) to fix before the loop runs ($ok ok)."
 exit $([ $bad -eq 0 ] && echo 0 || echo 1)

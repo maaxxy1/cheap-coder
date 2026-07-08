@@ -126,6 +126,26 @@ config/    system.env(.example)   (any Anthropic-compatible cheap model)
 docs/      WORKFLOW.md
 ```
 
+## Built on Superpowers
+cheap-coder is not a rival methodology - it **runs on the Superpowers framework**
+(`obra/superpowers`), split across two models to save money. Each phase invokes
+the matching Superpowers skill:
+
+| phase | Superpowers skill | model |
+|-------|-------------------|-------|
+| scope   | `brainstorming` | Claude |
+| plan    | `writing-plans` | Claude |
+| execute | `executing-plans` + `test-driven-development` | MiniMax |
+| execute (red test) | `systematic-debugging` | MiniMax |
+| review  | `requesting-code-review` + `verification-before-completion` | Claude |
+| merge   | `finishing-a-development-branch` | Claude |
+
+So the *how* is Superpowers' proven discipline; cheap-coder only decides *who pays
+for each step* (judgement on the smart model, volume on the cheap one) and adds
+the guards a cheap executor needs. `cheap-coder doctor` tells you if Superpowers
+is installed; if not, the prompts fall back to role contracts that encode the same
+steps. Full mapping in `docs/SUPERPOWERS.md`.
+
 ## How it compares
 cheap-coder borrows the good ideas from the popular agent frameworks and adds the
 two they mostly skip - a **cost split** and a **code-explanation gate**.
