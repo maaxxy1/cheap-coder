@@ -1,0 +1,25 @@
+# Paths the cheap EXECUTOR may never touch (globs, fnmatch-style).
+# The executor is a cheap model - keep it away from secrets, infra, and the
+# guard system itself. Add your project's sensitive paths here.
+
+# secrets + env
+*.env
+.env
+.env.*
+**/secrets/*
+**/*secret*
+**/*.pem
+**/*.key
+config/system.env
+
+# the guard system (a cheap model must not weaken its own leash)
+guards/*
+bin/*
+.protected
+
+# CI / infra / deploy
+.github/*
+**/Dockerfile
+**/fly.toml
+**/*.tf
+**/deploy/*

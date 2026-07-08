@@ -1,0 +1,11 @@
+# the real config holds your key - never commit it
+config/system.env
+
+# per-run artifacts (live in the target repo, not here)
+PLAN.md
+PLAN.template.ref
+STATE.md
+
+__pycache__/
+*.pyc
+.DS_Store
