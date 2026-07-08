@@ -26,6 +26,10 @@ PATTERNS = [
 
 def diff(base):
     try:
+        if base == "--staged":
+            # pre-commit hook mode: only the staged changes about to land.
+            return subprocess.run(["git", "diff", "--cached", "-U0"],
+                                  capture_output=True, text=True).stdout
         added = subprocess.run(
             ["git", "diff", f"{base}...HEAD", "-U0"],
             capture_output=True, text=True).stdout

@@ -22,6 +22,10 @@ def protected_globs():
 
 
 def changed(base):
+    if base == "--staged":
+        # pre-commit hook mode: only what's staged to commit right now.
+        return set(subprocess.run(["git", "diff", "--name-only", "--cached"],
+                                  capture_output=True, text=True).stdout.split())
     committed = subprocess.run(["git", "diff", "--name-only", f"{base}...HEAD"],
                                capture_output=True, text=True).stdout.split()
     working = subprocess.run(["git", "diff", "--name-only"],

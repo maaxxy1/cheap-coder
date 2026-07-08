@@ -23,6 +23,11 @@ BRANCH="${EXECUTOR_BRANCH_PREFIX:-exec/}$(date +%Y%m%d-%H%M%S)"
 git checkout -b "$BRANCH"
 echo "==> Executor branch: $BRANCH (base: $BASE)"
 
+# Mechanical enforcement: install the pre-commit guard hook so the cheap model
+# CANNOT commit a secret or touch a protected file - git blocks it, not just the
+# prompt. Belt-and-suspenders with the executor instructions.
+bash "$CC_HOME/bin/install-hook.sh" || echo "  (warning: could not install commit hook)"
+
 # Point Claude Code at the CHEAP MiniMax model just for this launch.
 export ANTHROPIC_BASE_URL="$EXECUTOR_BASE_URL"
 export ANTHROPIC_AUTH_TOKEN="$EXECUTOR_API_KEY"

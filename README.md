@@ -35,6 +35,15 @@ and boxes it in:
 - **Secrets are scanned out of the diff** (`guards/scan_secrets.py`).
 - **Claude reviews before merge** - catches the intent the cheap model missed.
 
+### Enforcement is mechanical, not just prompted
+The executor is *told* the rules, but rules a cheap model is only told are rules a
+cheap model can ignore. So the same guards run at **git level**: `execute.sh`
+installs a **pre-commit hook** on the exec branch that runs the secret + protected
+scanners on every commit. A commit that leaks a key or touches a protected file is
+**blocked by git**, not just discouraged by a prompt. And the guards themselves are
+**unit-tested** (`tests/test_guards.py`, run in CI) - the safety system is verified,
+not assumed. `cheap-coder selftest` proves it locally in one command.
+
 ## Setup (once)
 ```bash
 git clone https://github.com/maaxxy1/cheap-coder ~/cheap-coder
@@ -92,12 +101,17 @@ than it saves.
 
 ## Layout
 ```
-bin/       scope.sh / plan.sh / execute.sh / review.sh / guard.sh
+bin/       cheap-coder (CLI) + scope/plan/execute/review/guard/init/doctor/
+           status/abort/selftest/install-hook .sh
 prompts/   scoper.md / planner.md / executor.md / reviewer.md   (the role contracts)
 templates/ PLAN.template.md / STATE.template.md
 guards/    check_plan.py / check_answers.py / scan_secrets.py / check_protected.py
+hooks/     pre-commit          (git-level enforcement, installed on the exec branch)
+tests/     test_guards.py      (the safety system is unit-tested)
+examples/  PLAN.example.md / ANSWERS.example.md   (a passing pair)
+.github/   workflows/ci.yml    (guards tested on every push)
 .protected globs the executor may never touch
-config/    system.env(.example)
+config/    system.env(.example)   (any Anthropic-compatible cheap model)
 docs/      WORKFLOW.md
 ```
 

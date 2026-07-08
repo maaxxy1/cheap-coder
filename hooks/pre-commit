@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# cheap-coder pre-commit hook - MECHANICAL enforcement. Installed onto the
+# executor's branch so the guards run at git level: even if the cheap model
+# ignores its instructions, git blocks a commit that leaks a secret or touches a
+# protected path. Bypass only with `git commit --no-verify` (Claude, on review).
+set -uo pipefail
+HOME_FILE="$(git rev-parse --show-toplevel)/.cheap-coder/home"
+[ -f "$HOME_FILE" ] || { echo "[cheap-coder] hook: no .cheap-coder/home, skipping"; exit 0; }
+CC_HOME="$(cat "$HOME_FILE")"
+export PROTECTED_FILE="${PROTECTED_FILE:-$CC_HOME/.protected}"
+[ -f .protected ] && export PROTECTED_FILE=".protected"
+
+rc=0
+python3 "$CC_HOME/guards/scan_secrets.py" --staged || rc=1
+python3 "$CC_HOME/guards/check_protected.py" --staged || rc=1
+if [ $rc -ne 0 ]; then
+  echo "[cheap-coder] COMMIT BLOCKED by a guard (see above). Fix it, or --no-verify to override."
+fi
+exit $rc

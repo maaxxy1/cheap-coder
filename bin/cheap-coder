@@ -16,7 +16,10 @@ case "$cmd" in
   init)     exec "$CC_HOME/bin/init.sh"    "$@" ;;
   doctor)   exec "$CC_HOME/bin/doctor.sh"  "$@" ;;
   status)   exec "$CC_HOME/bin/status.sh"  "$@" ;;
-  version|-v|--version) echo "cheap-coder 0.2.0" ;;
+  abort)    exec "$CC_HOME/bin/abort.sh"   "$@" ;;
+  selftest) exec "$CC_HOME/bin/selftest.sh" "$@" ;;
+  hook)     exec "$CC_HOME/bin/install-hook.sh" "$@" ;;
+  version|-v|--version) echo "cheap-coder 0.3.0" ;;
   help|-h|--help|*)
     cat <<'EOF'
 cheap-coder - Claude plans, MiniMax executes, Claude reviews.
@@ -34,6 +37,9 @@ cheap-coder - Claude plans, MiniMax executes, Claude reviews.
   Anytime:
     cheap-coder status         where the current run is (phase, branch, tasks)
     cheap-coder guard  [base]  run all hard guards manually
+    cheap-coder abort  [base]  bail: drop the exec branch + artifacts, nothing merged
+    cheap-coder selftest       prove the guards work (no model calls)
+    cheap-coder hook           install the pre-commit guard hook in this repo
 EOF
     ;;
 esac
