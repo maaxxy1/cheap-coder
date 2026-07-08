@@ -1,9 +1,20 @@
 # cheap-coder
 
-A **global, project-agnostic** coding loop that keeps the expensive model doing
-only the expensive-worthy work and hands the grind to a dirt-cheap one.
+**What it does, in one line:** you ask for a code change in any repo; the smart
+model (Claude) plans it and checks it, a cheap model (MiniMax) writes it, and you
+get working, reviewed code for ~1/10th the AI cost - without the cheap model being
+able to break your repo or leak a secret.
 
 > **Claude plans. MiniMax executes. Claude reviews.**
+
+**See it in 5 seconds (no key needed):**
+```bash
+cheap-coder demo    # walks the whole loop on a bundled example
+```
+
+A **global, project-agnostic** tool - point it at any git repo. The smart model
+does the thinking (plan + review); the cheap model does the typing; guardrails
+keep the cheap model on a short leash.
 
 Point it at *any* git repo. The smart model (Claude) writes a rigorous,
 mechanical plan and reviews the result; the cheap model (MiniMax) does the bulk

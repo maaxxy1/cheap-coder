@@ -19,10 +19,14 @@ case "$cmd" in
   abort)    exec "$CC_HOME/bin/abort.sh"   "$@" ;;
   selftest) exec "$CC_HOME/bin/selftest.sh" "$@" ;;
   hook)     exec "$CC_HOME/bin/install-hook.sh" "$@" ;;
+  demo)     exec "$CC_HOME/bin/demo.sh"   "$@" ;;
   version|-v|--version) echo "cheap-coder 0.3.0" ;;
   help|-h|--help|*)
     cat <<'EOF'
 cheap-coder - Claude plans, MiniMax executes, Claude reviews.
+
+  See it work (no key needed):
+    cheap-coder demo          walk the whole loop on a bundled example
 
   Setup (once):
     cheap-coder init          scaffold config + .protected into this repo
