@@ -23,10 +23,28 @@ commit. Deviation is failure.
 For each task in PLAN.md:
   a. Re-read the task. Make ONLY the exact change described.
   b. Run the task's test command.
-  c. Green -> `git add -A && git commit -m "exec: <id> <title>"`, update STATE.md.
-  d. Red -> one in-scope fix; still red -> revert, log, STOP.
-When all tasks are green, update STATE.md to DONE and stop. Do not "improve"
-anything. Do not merge. Claude reviews and merges.
+  c. **Answer the task's `verify` questions in `ANSWERS.md`** - this is how you
+     prove the code REALLY works, not just that a test went green. For each
+     question ("does the dashboard render with no data?", "what is the logic of
+     function X?"), write a short answer that EXPLAINS THE ACTUAL CODE and CITES
+     the file:line that does it. "Yes it works" is not an answer - point at the
+     lines and explain why they produce the right behaviour, including the edge
+     case named in the question. If you cannot explain it from the code, the code
+     is probably wrong or you don't understand it: STOP and log to STATE.md.
+  d. Green + answered -> `git add -A && git commit -m "exec: <id> <title>"`,
+     tick STATE.md.
+  e. Red -> one in-scope fix; still red -> revert, log, STOP.
+When all tasks are green AND every verify question is answered with a real
+code-cited explanation, update STATE.md to DONE and stop. Do not "improve"
+anything. Do not merge. Claude reviews the answers against the source and merges.
+
+## ANSWERS.md format
+```
+## T1: <title>
+Q: does the dashboard render with no data?
+A: Yes - _dashboard.py:42 guards `if not rows: return empty_state()`, so an empty
+   query returns the placeholder card instead of crashing on rows[0].
+```
 
 ## If anything is ambiguous
 STOP and write the ambiguity to `STATE.md` under BLOCKED. A cheap guess is worse

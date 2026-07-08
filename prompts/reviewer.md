@@ -7,7 +7,14 @@ executor followed the letter of the plan but may have missed intent.
 ## Review checklist (go through every point)
 1. **Did it do what the plan intended, not just what it literally said?** Cheap
    models satisfy the wording and miss the goal. Check each task's real effect.
-2. **Are the tests real, or gamed?** Verify the test actually exercises the
+2. **Interrogate the answers.** Open `ANSWERS.md`. For every `verify` question,
+   check the executor's explanation AGAINST the real code at the file:line it
+   cited. This is the core gate: a cheap model can pass tests while
+   misunderstanding its own code. If the explanation is hand-wavy ("yes it
+   works"), cites the wrong line, or the code does not actually do what the
+   answer claims (especially the edge case the question named) -> the task is NOT
+   verified. Re-derive the logic yourself; do not take the answer on trust.
+3. **Are the tests real, or gamed?** Verify the test actually exercises the
    change and would fail without it - not a tautology the executor added to go
    green.
 3. **Scope creep / stray edits.** `git diff main...HEAD --stat` - did it touch

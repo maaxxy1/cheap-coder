@@ -39,11 +39,19 @@ def main(path):
     for title, body in zip(task_titles, bodies):
         tid = title.split(":")[0].strip()
         low = body.lower()
-        # Each task needs the four fields.
-        for field in ("files", "change", "test", "accept"):
+        # Each task needs the five fields (verify = the logic questions the
+        # executor must answer to prove the code really works, not just pass).
+        for field in ("files", "change", "test", "accept", "verify"):
             if f"**{field}**" not in low and f"- **{field}**" not in low:
                 fail(f"{tid}: missing '**{field}**:' field")
                 problems += 1
+        # The verify field must actually pose a question, not restate the test.
+        verify_match = re.search(r"\*\*verify\*\*:(.*?)(?=\n- \*\*|\n###|\Z)",
+                                 body, re.I | re.S)
+        verify = verify_match.group(1) if verify_match else ""
+        if verify and "?" not in verify and len(verify.strip()) < 20:
+            fail(f"{tid}: verify must pose real logic questions to answer/explain")
+            problems += 1
         # The change must not be vague.
         change_match = re.search(r"\*\*change\*\*:(.*?)(?=\n- \*\*|\Z)", body,
                                  re.I | re.S)

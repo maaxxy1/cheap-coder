@@ -48,13 +48,26 @@ endpoint (`ANTHROPIC_BASE_URL` / `ANTHROPIC_MODEL`) - no extra runtime.
 ```bash
 cd ~/any-project
 
-~/cheap-coder/bin/plan.sh "add rate limiting to the login endpoint"   # Claude plans
-~/cheap-coder/bin/execute.sh                                          # MiniMax executes
-~/cheap-coder/bin/review.sh main                                     # Claude reviews + merges
+~/cheap-coder/bin/scope.sh   "make the dashboard work"   # Claude interrogates YOU -> SCOPE.md
+~/cheap-coder/bin/plan.sh    "make the dashboard work"   # Claude plans (+ verify questions) -> PLAN.md
+~/cheap-coder/bin/execute.sh                            # MiniMax executes + explains -> ANSWERS.md
+~/cheap-coder/bin/review.sh  main                       # Claude interrogates the answers + merges
 ```
-`plan.sh` writes `PLAN.md`. `execute.sh` validates it, branches, and runs the
-cheap model against it under the guards. `review.sh` runs the hard guards, hands
-the diff to Claude, and merges on approval.
+- **scope** - Claude asks *you* questions until the build is unambiguous (which
+  dashboard, what "work" means, the edge cases, how we'll prove it). A fuzzy
+  scope is what a cheap executor turns into wasted work.
+- **plan** - Claude writes mechanical tasks AND, per task, the **logic questions**
+  the executor must answer to prove it really works.
+- **execute** - MiniMax makes the change, runs the test, and answers each logic
+  question by **explaining the actual code and citing file:line** (in
+  `ANSWERS.md`). "It works" is rejected; it has to point at the lines.
+- **review** - Claude checks those explanations against the real source (catches
+  a cheap model that passes tests while misunderstanding its own code), runs the
+  hard guards, and merges on approval.
+
+The interrogation is the teeth: a passing test is necessary but not sufficient -
+the executor has to *logically explain why the code is correct*, and Claude
+verifies that explanation against the code.
 
 ## What NOT to hand to the cheap model
 The planner flags subtle logic, security/compliance, and ambiguous refactors as
@@ -64,10 +77,10 @@ than it saves.
 
 ## Layout
 ```
-bin/       plan.sh / execute.sh / review.sh / guard.sh
-prompts/   planner.md / executor.md / reviewer.md   (the role contracts)
+bin/       scope.sh / plan.sh / execute.sh / review.sh / guard.sh
+prompts/   scoper.md / planner.md / executor.md / reviewer.md   (the role contracts)
 templates/ PLAN.template.md / STATE.template.md
-guards/    check_plan.py / scan_secrets.py / check_protected.py
+guards/    check_plan.py / check_answers.py / scan_secrets.py / check_protected.py
 .protected globs the executor may never touch
 config/    system.env(.example)
 docs/      WORKFLOW.md

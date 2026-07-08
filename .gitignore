@@ -2,8 +2,10 @@
 config/system.env
 
 # per-run artifacts (live in the target repo, not here)
+SCOPE.md
 PLAN.md
 PLAN.template.ref
+ANSWERS.md
 STATE.md
 
 __pycache__/

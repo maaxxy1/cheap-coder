@@ -9,6 +9,10 @@ export PROTECTED_FILE="${PROTECTED_FILE:-$CC_HOME/.protected}"
 echo "==> Running hard guards against $BASE ..."
 python3 "$CC_HOME/guards/scan_secrets.py" "$BASE"
 python3 "$CC_HOME/guards/check_protected.py" "$BASE"
+# The interrogation gate: every task's logic questions must be answered with code.
+[ -f PLAN.md ] && [ -f ANSWERS.md ] && \
+  python3 "$CC_HOME/guards/check_answers.py" PLAN.md ANSWERS.md || \
+  echo "  (note: PLAN.md/ANSWERS.md not both present - skipping answers gate)"
 
 echo "==> Handing the diff to Claude for review ..."
 claude "$(cat "$CC_HOME/prompts/reviewer.md")

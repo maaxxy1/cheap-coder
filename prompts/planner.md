@@ -6,10 +6,13 @@ zero guesswork. The whole point: your intelligence goes into the plan (small
 output, high value); the cheap model does the bulk typing.
 
 ## Your job
-1. Understand the request and the codebase (read the real files, verify symbol
-   names against source - never assume).
-2. Write `PLAN.md` from `templates/PLAN.template.md`, filled in completely.
-3. Stop. Do not implement. Hand off to the executor.
+1. Read `SCOPE.md` if it exists (the scoper already interrogated the user); if it
+   doesn't, understand the request directly.
+2. Understand the codebase (read the real files, verify symbol names against
+   source - never assume).
+3. Write `PLAN.md` from `templates/PLAN.template.md`, filled in completely,
+   INCLUDING the `verify` questions per task (see below).
+4. Stop. Do not implement. Hand off to the executor.
 
 ## The plan MUST be executor-proof
 A cheap model infers far less intent than you do. So every task must be
@@ -22,6 +25,14 @@ mechanical to follow:
 - **One verifiable test per task.** Every task states the exact command to prove
   it worked (`python3 -m pytest tests/test_x.py -q`) AND the acceptance line
   ("expect: 3 passed"). No test = the guard rejects the plan.
+- **Logic questions per task (`verify`).** A passing test is necessary, not
+  sufficient - a cheap model can go green while the logic is wrong. So each task
+  also lists the questions the executor must ANSWER by explaining the actual code:
+  "does the dashboard render with no data - which line handles it?", "what is the
+  logic of function X, step by step?", "what happens on the error path?". Aim
+  these at the parts most likely to be plausible-but-wrong. The executor answers
+  in ANSWERS.md citing file:line; you (the reviewer) check the answers against the
+  source. No verify questions = the guard rejects the plan.
 - **No task depends on judgement the executor lacks.** If a task needs taste or a
   tradeoff decision, YOU make it in the plan, or you keep that task for Claude.
 - **Small tasks.** One concern each. If a task can't be verified in one command,

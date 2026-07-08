@@ -24,12 +24,19 @@ main
   the full new function. No vague verbs like "update" or "handle".>
 - **test**: `python3 -m pytest tests/test_file.py -q`
 - **accept**: <the exact expected result, e.g. "3 passed" or "prints OK">
+- **verify**: <the logic questions the executor MUST answer in ANSWERS.md to
+  prove this task really works - not just "does the test pass" but "does the
+  dashboard render with no data?", "what is the logic of function X, line by
+  line?", "which line handles the empty case, and how?". The executor answers by
+  explaining the actual code and citing lines; Claude checks the answers against
+  the source in review.>
 
 ### T2: <short imperative title>
 - **files**: `path/to/other.py`
 - **change**: <exact edit>
 - **test**: `<command>`
 - **accept**: <expected result>
+- **verify**: <logic questions to answer + explain>
 
 ## Final verification
 <!-- The whole-suite / end-to-end command the reviewer runs before merge. -->
